@@ -48,10 +48,12 @@ You can also use other custom data sources, as long as the data source format is
 
 ## Star History
 
-<a href="https://star-history.com/#syt2/zotero-addons&Timeline">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=syt2/zotero-addons&type=Timeline&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=syt2/zotero-addons&type=Timeline" />
-    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=syt2/zotero-addons&type=Timeline" />
-  </picture>
+## Star History
+
+<a href="https://www.star-history.com/?repos=syt2%2Fzotero-addons&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=syt2/zotero-addons&type=date&theme=dark&legend=top-left&sealed_token=MkdL6ADXzHB6sHtsx3LIgc-xsY0I_HFg5B_Ic6ArimLVeYLeUch_uQkuMWBgIa9DyyFrc53HGk3yuJ67JSQXftAvFVvHEn7cSLTih53vZlKbIfl9RsFCn57okasSsexHYqoU4GT1TIkLgFzuhobG28Op1ePCBtPNiApgLriJi6aL--mdOWIHjf5cSzMJ" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=syt2/zotero-addons&type=date&legend=top-left&sealed_token=MkdL6ADXzHB6sHtsx3LIgc-xsY0I_HFg5B_Ic6ArimLVeYLeUch_uQkuMWBgIa9DyyFrc53HGk3yuJ67JSQXftAvFVvHEn7cSLTih53vZlKbIfl9RsFCn57okasSsexHYqoU4GT1TIkLgFzuhobG28Op1ePCBtPNiApgLriJi6aL--mdOWIHjf5cSzMJ" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=syt2/zotero-addons&type=date&legend=top-left&sealed_token=MkdL6ADXzHB6sHtsx3LIgc-xsY0I_HFg5B_Ic6ArimLVeYLeUch_uQkuMWBgIa9DyyFrc53HGk3yuJ67JSQXftAvFVvHEn7cSLTih53vZlKbIfl9RsFCn57okasSsexHYqoU4GT1TIkLgFzuhobG28Op1ePCBtPNiApgLriJi6aL--mdOWIHjf5cSzMJ" />
+ </picture>
 </a>
