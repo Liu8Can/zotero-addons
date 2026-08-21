@@ -51,14 +51,6 @@ function initArtalk(window, document) {
         const artalkUser = Services.prefs.getStringPref('ArtalkUser', '{}');
         const user = JSON.parse(artalkUser);
         if (!user.email || !user.name) {
-          const addonInfoString = encodeURIComponent(JSON.stringify(addonInfo));
-          const url = `https://plugin.zotero.store?callbackZoteroUserConfig=1&amp;addonInfo=` + addonInfoString;
-          const pluginAuthWindow = openInViewAction(url);
-          zotero.Promise.delay(1000).then(() => {
-            pluginAuthWindow.onunload = () => {
-              window.arguments[0].reload();
-            }
-          });
           return;
         }
         next();
@@ -107,4 +99,4 @@ function initArtalk(window, document) {
     prefersDarkScheme.addEventListener('change', updateTheme)
 
   return artalk;
-} 
+}
