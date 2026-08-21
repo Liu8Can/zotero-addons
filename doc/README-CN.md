@@ -4,7 +4,6 @@
 [![Release](https://img.shields.io/github/v/release/syt2/zotero-addons?style=flat-square&logo=github&color=red)](https://github.com/syt2/zotero-addons/releases/latest)
 ![Downloads](https://img.shields.io/github/downloads/syt2/zotero-addons/latest/total?style=flat-square&logo=github&label=downloads)  
 [![Using Zotero Plugin Template](https://img.shields.io/badge/Using-Zotero%20Plugin%20Template-blue?style=flat-square&logo=github)](https://github.com/windingwind/zotero-plugin-template)
-[![Using Zotero Chinese Plugins](https://img.shields.io/badge/Using-Zotero%20Chinese%20Plugins-blue?style=flat-square&logo=github)](https://github.com/zotero-chinese/zotero-plugins)
 [![Using Zotero Scraper](https://img.shields.io/badge/Using-Zotero%20Addons%20Scraper-blue?style=flat-square&logo=github)](https://github.com/syt2/zotero-addons-scraper)
 [![Using Artalk](https://img.shields.io/badge/Using-Artalk-blue?style=flat-square&logo=github)](https://github.com/ArtalkJS/Artalk) 
 
@@ -37,16 +36,11 @@
 
 在插件市场界面选择 `(插件爬虫)` 即可使用该数据源
 
-### [zotero-chinese/zotero-plugins](https://github.com/zotero-chinese/zotero-plugins)
-
-在插件市场界面选择 `(zotero中文社区)` 即可使用该数据源
-
-
-> 若你有新的插件想要添加到插件源内，请提交至 [syt2/zotero-addons-scraper](https://github.com/syt2/zotero-addons-scraper) 或 [zotero-chinese/zotero-plugins](https://github.com/zotero-chinese/zotero-plugins)
+> 若你有新的插件想要添加到插件源内，请提交至 [syt2/zotero-addons-scraper](https://github.com/syt2/zotero-addons-scraper)
 
 ### 自定义源
 
-任何符合 [zotero-chinese/zotero-plugins](https://github.com/zotero-chinese/zotero-plugins) 格式的数据源都可用作本插件的数据源，你可以在插件内选择`自定义源`并提供数据源URL即可
+任何兼容插件数据格式的数据源都可用作本插件的数据源，你可以在插件内选择`自定义源`并提供数据源 URL 即可
 
 ## Star 历史
 

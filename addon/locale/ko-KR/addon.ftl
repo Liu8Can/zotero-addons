@@ -47,10 +47,6 @@ scheme-install-confirm-confirm = 설치
 
 source-custom = 사용자 정의
 source-auto = 자동
-source-zotero-chinese-github = GitHub (zotero-chinese)
-source-zotero-chinese-gitee = Gitee (zotero-chinese)
-source-zotero-chinese-jsdelivr = jsDelivr (zotero-chinese)
-source-zotero-chinese-ghproxy = gh-proxy (zotero-chinese)
 source-zotero-scraper-github = GitHub (addon-scraper)
 source-zotero-scraper-gitee = Gitee (addon-scraper)
 source-zotero-scraper-ghproxy = gh-proxy (addon-scraper)

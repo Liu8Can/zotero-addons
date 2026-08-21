@@ -47,10 +47,6 @@ scheme-install-confirm-confirm = 安装
 
 source-custom = 自定义
 source-auto = 自动
-source-zotero-chinese-github = GitHub (zotero中文社区)
-source-zotero-chinese-gitee = Gitee (zotero中文社区)
-source-zotero-chinese-jsdelivr = jsDelivr (zotero中文社区)
-source-zotero-chinese-ghproxy = gh-proxy (zotero中文社区)
 source-zotero-scraper-github = GitHub (插件爬虫)
 source-zotero-scraper-gitee = Gitee (插件爬虫)
 source-zotero-scraper-ghproxy = gh-proxy (插件爬虫)

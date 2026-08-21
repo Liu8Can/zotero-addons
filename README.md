@@ -4,7 +4,6 @@
 [![Release](https://img.shields.io/github/v/release/syt2/zotero-addons?style=flat-square&logo=github&color=red)](https://github.com/syt2/zotero-addons/releases/latest)
 ![Downloads](https://img.shields.io/github/downloads/syt2/zotero-addons/latest/total?style=flat-square&logo=github&label=downloads)  
 [![Using Zotero Plugin Template](https://img.shields.io/badge/Using-Zotero%20Plugin%20Template-blue?style=flat-square&logo=github)](https://github.com/windingwind/zotero-plugin-template)
-[![Using Zotero Chinese Plugins](https://img.shields.io/badge/Using-Zotero%20Chinese%20Plugins-blue?style=flat-square&logo=github)](https://github.com/zotero-chinese/zotero-plugins)
 [![Using Zotero Scraper](https://img.shields.io/badge/Using-Zotero%20Addons%20Scraper-blue?style=flat-square&logo=github)](https://github.com/syt2/zotero-addons-scraper)
 [![Using Artalk](https://img.shields.io/badge/Using-Artalk-blue?style=flat-square&logo=github)](https://github.com/ArtalkJS/Artalk)  
 
@@ -35,16 +34,11 @@ The main data source for add-ons comes from **[syt2/zotero-addons-scraper](https
 
 Switch the source to `(addon-scraper)` in Add-on Market to use this source.
 
-### [zotero-chinese/zotero-plugins](https://github.com/zotero-chinese/zotero-plugins)
-
-Switch the source to `(zotero-chinese)` in Add-on Market to use this source.
-
-
-> If you have new add-ons to add, submit it to [syt2/zotero-addons-scraper](https://github.com/syt2/zotero-addons-scraper) or [zotero-chinese/zotero-plugins](https://github.com/zotero-chinese/zotero-plugins).
+> If you have new add-ons to add, submit it to [syt2/zotero-addons-scraper](https://github.com/syt2/zotero-addons-scraper).
 
 ### Custom Source
 
-You can also use other custom data sources, as long as the data source format is consistent with the format in the [zotero-chinese/zotero-plugins](https://github.com/zotero-chinese/zotero-plugins).
+You can also use other custom data sources that use a compatible add-on data format.
 
 ## Star History
 

@@ -29,19 +29,15 @@ export function xpiDownloadUrls(addonInfo: AddonInfo) {
   const result = Object.values(downloadsURLs).filter((e) => !!e);
   let firstElement: string | undefined = undefined;
   switch (sourceID) {
-    case "source-zotero-chinese-github":
     case "source-zotero-scraper-github":
       firstElement = downloadsURLs.github;
       break;
-    case "source-zotero-chinese-ghproxy":
     case "source-zotero-scraper-ghproxy":
       firstElement = downloadsURLs.ghProxy;
       break;
-    case "source-zotero-chinese-jsdelivr":
     case "source-zotero-scraper-jsdelivr":
       firstElement = downloadsURLs.jsdeliver;
       break;
-    case "source-zotero-chinese-gitee":
     case "source-zotero-scraper-gitee":
       firstElement = downloadsURLs.gitee;
       break;

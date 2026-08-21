@@ -5,10 +5,6 @@ import { getPref, setPref } from "./prefs";
  */
 export type SourceID =
   | "source-auto"
-  | "source-zotero-chinese-github"
-  | "source-zotero-chinese-gitee"
-  | "source-zotero-chinese-jsdelivr"
-  | "source-zotero-chinese-ghproxy"
   | "source-zotero-scraper-github"
   | "source-zotero-scraper-gitee"
   | "source-zotero-scraper-ghproxy"
@@ -47,22 +43,6 @@ export const Sources: Readonly<Readonly<Source>[]> = <const>[
   {
     id: "source-zotero-scraper-ghproxy",
     api: "https://gh-proxy.org/https://raw.githubusercontent.com/syt2/zotero-addons-scraper/publish/addon_infos.json",
-  },
-  {
-    id: "source-zotero-chinese-github",
-    api: "https://raw.githubusercontent.com/zotero-chinese/zotero-plugins/gh-pages/dist/plugins.json",
-  },
-  {
-    id: "source-zotero-chinese-gitee",
-    api: "https://gitee.com/northword/zotero-plugins/raw/gh-pages/dist/plugins.json",
-  },
-  {
-    id: "source-zotero-chinese-jsdelivr",
-    api: "https://cdn.jsdelivr.net/gh/zotero-chinese/zotero-plugins@gh-pages/dist/plugins.json",
-  },
-  {
-    id: "source-zotero-chinese-ghproxy",
-    api: "https://gh-proxy.org/https://raw.githubusercontent.com/zotero-chinese/zotero-plugins/gh-pages/dist/plugins.json",
   },
   {
     id: "source-custom",
