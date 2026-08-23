@@ -14,6 +14,7 @@ declare namespace _ZoteroTypes {
       'guideStatus': number;
       'firstInstalledVersion': string;
       'tagColumnLayoutMigrated': boolean;
+      'nameColumnWidthMigrated': boolean;
     };
   }
 }

@@ -15,9 +15,13 @@ type PersistedColumnState = Pick<
 >;
 
 const TAG_COLUMN_MIGRATION_PREF = "tagColumnLayoutMigrated";
+const NAME_COLUMN_MIGRATION_PREF = "nameColumnWidthMigrated";
+const NAME_COLUMN_KEY = "menu-name";
 const TAG_COLUMN_KEY = "menu-tags";
 const STAR_COLUMN_KEY = "menu-star";
 const TAG_COLUMN_WIDTH = 96;
+const NAME_COLUMN_WIDTH = 200;
+const NAME_COLUMN_MIN_WIDTH = 160;
 
 export class TableColumnManager {
   private largePrefHelper = new LargePrefHelper(
@@ -56,6 +60,7 @@ export class TableColumnManager {
       // Use default columns
     }
     this.migrateTagColumnLayoutIfNeeded();
+    this.migrateNameColumnWidthIfNeeded();
     this._columns.map((column) =>
       // @ts-expect-error ignore getString type check
       Object.assign(column, { label: getString(column.dataKey) }),
@@ -120,9 +125,11 @@ export class TableColumnManager {
   private getDefaultColumns(): ExtendedColumnOptions[] {
     return [
       {
-        dataKey: "menu-name",
+        dataKey: NAME_COLUMN_KEY,
         label: "menu-name",
         staticWidth: true,
+        width: NAME_COLUMN_WIDTH,
+        minWidth: NAME_COLUMN_MIN_WIDTH,
         hidden: false,
         ordinal: 0,
       },
@@ -232,6 +239,39 @@ export class TableColumnManager {
       this._columns.map((column) => this.toPersistedColumnState(column)),
     );
     setPref(TAG_COLUMN_MIGRATION_PREF, true);
+  }
+
+  /**
+   * Repair the missing name-column width used by older releases.
+   *
+   * Zotero 7 distributed width across columns that omitted it. Zotero 10's
+   * virtualized table treats a static column without a width as effectively
+   * minimum-sized, so existing persisted layouts can make the name column
+   * nearly unreadable.
+   */
+  private migrateNameColumnWidthIfNeeded(): void {
+    if (getPref(NAME_COLUMN_MIGRATION_PREF)) {
+      return;
+    }
+
+    const nameColumn = this._columns.find(
+      (column) => column.dataKey === NAME_COLUMN_KEY,
+    );
+    if (!nameColumn) {
+      return;
+    }
+
+    const width = Number(nameColumn.width);
+    if (!Number.isFinite(width) || width < NAME_COLUMN_MIN_WIDTH) {
+      nameColumn.width = NAME_COLUMN_WIDTH;
+    }
+    nameColumn.minWidth = NAME_COLUMN_MIN_WIDTH;
+
+    this.largePrefHelper.setValue(
+      "columns",
+      this._columns.map((column) => this.toPersistedColumnState(column)),
+    );
+    setPref(NAME_COLUMN_MIGRATION_PREF, true);
   }
 
   /**

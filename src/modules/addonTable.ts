@@ -9,7 +9,7 @@ import {
   addonReleaseInfo,
   relatedAddons,
 } from "./addonInfo";
-import { isWindowAlive } from "../utils/window";
+import { getActiveWindow, isWindowAlive } from "../utils/window";
 import {
   Sources,
   currentSource,
@@ -328,6 +328,7 @@ export class AddonTable {
       return;
     }
     const progressWin = new ztoolkit.ProgressWindow(getString("addon-name"), {
+      window: getActiveWindow(),
       closeOnClick: true,
       closeTime: -1,
     })

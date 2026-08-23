@@ -14,7 +14,7 @@ import { HistoricalVersions } from "./historicalVersions";
 import { getString } from "../utils/locale";
 import { installAddonFrom, undoUninstall, uninstall } from "../services";
 import { config } from "../../package.json";
-import { isWindowAlive } from "../utils/window";
+import { getActiveWindow, isWindowAlive } from "../utils/window";
 import { getXPIDatabase, getAddonManager } from "../utils/compat";
 import { DetailButtonHandler } from "../ui/detail";
 
@@ -504,6 +504,7 @@ export class AddonInfoDetail {
 
   private static showRollbackError(text: string) {
     new ztoolkit.ProgressWindow(getString("addon-name"), {
+      window: getActiveWindow(),
       closeOnClick: true,
       closeTime: 3000,
     })
