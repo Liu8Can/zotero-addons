@@ -32,9 +32,10 @@
 
 ### [syt2/zotero-addons-scraper](https://github.com/syt2/zotero-addons-scraper)
 
-插件主数据源来自 **[syt2/zotero-addons-scraper](https://github.com/syt2/zotero-addons-scraper)**
+插件数据源来自 **[syt2/zotero-addons-scraper](https://github.com/syt2/zotero-addons-scraper)**
 
-在插件市场界面选择 `(插件爬虫)` 即可使用该数据源
+在插件市场界面选择 GitHub、Gitee、jsDelivr、gh-proxy、ghFast 或 ghProxyNet
+即可使用该数据源
 
 > 若你有新的插件想要添加到插件源内，请提交至 [syt2/zotero-addons-scraper](https://github.com/syt2/zotero-addons-scraper)
 

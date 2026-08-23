@@ -47,10 +47,12 @@ scheme-install-confirm-confirm = 安裝
 
 source-custom = 自訂
 source-auto = 自動
-source-zotero-scraper-github = GitHub (外掛爬蟲)
-source-zotero-scraper-gitee = Gitee (外掛爬蟲)
-source-zotero-scraper-ghproxy = gh-proxy (外掛爬蟲)
-source-zotero-scraper-jsdelivr = jsDelivr (外掛爬蟲)
+source-zotero-scraper-github = GitHub
+source-zotero-scraper-gitee = Gitee
+source-zotero-scraper-ghproxy = gh-proxy
+source-zotero-scraper-ghfast = ghFast
+source-zotero-scraper-ghproxynet = ghProxyNet
+source-zotero-scraper-jsdelivr = jsDelivr
 
 menu-install = 安裝
 menu-update = 更新
@@ -74,6 +76,8 @@ source-github = GitHub
 source-gitee = Gitee
 source-jsdelivr = jsDelivr
 source-ghproxy = gh-proxy
+source-ghfast = ghFast
+source-ghproxynet = ghProxyNet
 source-kgithub = kGitHub
 source-others = 未知
 

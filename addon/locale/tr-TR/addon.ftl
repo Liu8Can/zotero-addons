@@ -47,10 +47,12 @@ scheme-install-confirm-confirm = Kur
 
 source-custom = Özel
 source-auto = Otomatik
-source-zotero-scraper-github = GitHub (addon-scraper)
-source-zotero-scraper-gitee = Gitee (addon-scraper)
-source-zotero-scraper-ghproxy = gh-proxy (addon-scraper)
-source-zotero-scraper-jsdelivr = jsDelivr (addon-scraper)
+source-zotero-scraper-github = GitHub
+source-zotero-scraper-gitee = Gitee
+source-zotero-scraper-ghproxy = gh-proxy
+source-zotero-scraper-ghfast = ghFast
+source-zotero-scraper-ghproxynet = ghProxyNet
+source-zotero-scraper-jsdelivr = jsDelivr
 
 menu-install = Kur
 menu-update = Güncelle
@@ -74,6 +76,8 @@ source-github = GitHub
 source-gitee = Gitee
 source-jsdelivr = jsDelivr
 source-ghproxy = gh-proxy
+source-ghfast = ghFast
+source-ghproxynet = ghProxyNet
 source-kgithub = kGitHub
 source-others = Bilinmiyor
 

@@ -35,15 +35,25 @@ export interface UninstallOptions {
  * Get XPI source name from URL
  */
 export function xpiURLSourceName(url: string): string {
-  if (url.startsWith("https://github.com")) {
+  let hostname: string;
+  try {
+    hostname = new URL(url).hostname.toLowerCase();
+  } catch {
+    return "source-others";
+  }
+  if (hostname === "github.com") {
     return "source-github";
-  } else if (url.startsWith("https://gitee.com")) {
+  } else if (hostname === "gitee.com") {
     return "source-gitee";
-  } else if (url.startsWith("https://ghproxy.com")) {
+  } else if (hostname === "ghproxy.com" || hostname === "gh-proxy.org") {
     return "source-ghproxy";
-  } else if (url.startsWith("https://cdn.jsdelivr.net")) {
+  } else if (hostname === "ghfast.top") {
+    return "source-ghfast";
+  } else if (hostname === "ghproxy.net") {
+    return "source-ghproxynet";
+  } else if (hostname === "cdn.jsdelivr.net") {
     return "source-jsdelivr";
-  } else if (url.startsWith("https://kkgithub.com")) {
+  } else if (hostname === "kkgithub.com") {
     return "source-kgithub";
   } else {
     return "source-others";
