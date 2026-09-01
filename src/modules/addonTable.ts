@@ -167,14 +167,16 @@ export class AddonTable {
   /**
    * Display addon table window
    */
-  static async showAddonsWindow(options?: { from?: "toolbar" | "menu" }) {
+  static async showAddonsWindow(options?: {
+    from?: "toolbar" | "menu";
+  }): Promise<Window | undefined> {
     if (this.window && isWindowAlive(this.window)) {
       if (options?.from) {
         this.updateHideToolbarEntranceInWindow(options.from === "toolbar");
       }
       this.window.focus();
       this.refresh();
-      return;
+      return this.window;
     }
     this.resetWindowTransientState();
     let resolveInit: () => void;
@@ -246,6 +248,7 @@ export class AddonTable {
       }
       Guide.showGuideInAddonTableIfNeed(this.window);
     }, 2000);
+    return win;
   }
 
   /**

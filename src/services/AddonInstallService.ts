@@ -7,7 +7,7 @@ import { ProgressWindowHelper } from "zotero-plugin-toolkit";
 import { config } from "../../package.json";
 import { getString } from "../utils/locale";
 import { getAddonManager } from "../utils/compat";
-import { getActiveWindow, isWindowAlive } from "../utils/window";
+import { resolveProgressWindowOwner } from "../utils/window";
 import type {
   AddonInfo,
   LocalAddon,
@@ -90,9 +90,7 @@ export async function uninstall(
   addon: LocalAddon,
   options?: UninstallOptions,
 ): Promise<boolean> {
-  const progressWindowOwner = isWindowAlive(options?.window)
-    ? options.window
-    : getActiveWindow();
+  const progressWindowOwner = resolveProgressWindowOwner(options?.window);
   if (options?.popConfirmDialog) {
     const confirm = await (Services as any).prompt.confirmEx(
       null as any,
@@ -154,9 +152,7 @@ export async function installAddonFrom(
   url: string | string[],
   options?: InstallOptions,
 ): Promise<void> {
-  const progressWindowOwner = isWindowAlive(options?.window)
-    ? options.window
-    : getActiveWindow();
+  const progressWindowOwner = resolveProgressWindowOwner(options?.window);
   if (!Array.isArray(url)) {
     url = [url];
   }

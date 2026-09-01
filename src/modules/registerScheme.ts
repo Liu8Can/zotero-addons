@@ -1,4 +1,5 @@
 import { getString } from "../utils/locale";
+import { resolveProgressWindowOwner } from "../utils/window";
 import { AddonTable } from "../modules/addonTable";
 import { AddonInfoManager } from "../modules/addonInfo";
 import {
@@ -111,9 +112,10 @@ async function handleConfigSource(params: any): Promise<void> {
   }
 
   if (success) {
-    AddonTable.close();
-    AddonTable.showAddonsWindow();
+    await AddonTable.close();
+    const addonTableWindow = await AddonTable.showAddonsWindow();
     new ztoolkit.ProgressWindow(getString("addon-name"), {
+      window: resolveProgressWindowOwner(addonTableWindow),
       closeOnClick: true,
       closeTime: 3000,
     })
