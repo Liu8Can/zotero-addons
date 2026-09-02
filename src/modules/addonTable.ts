@@ -9,7 +9,7 @@ import {
   addonReleaseInfo,
   relatedAddons,
 } from "./addonInfo";
-import { isWindowAlive } from "../utils/window";
+import { getActiveWindow, isWindowAlive } from "../utils/window";
 import {
   Sources,
   currentSource,
@@ -167,14 +167,16 @@ export class AddonTable {
   /**
    * Display addon table window
    */
-  static async showAddonsWindow(options?: { from?: "toolbar" | "menu" }) {
+  static async showAddonsWindow(options?: {
+    from?: "toolbar" | "menu";
+  }): Promise<Window | undefined> {
     if (this.window && isWindowAlive(this.window)) {
       if (options?.from) {
         this.updateHideToolbarEntranceInWindow(options.from === "toolbar");
       }
       this.window.focus();
       this.refresh();
-      return;
+      return this.window;
     }
     this.resetWindowTransientState();
     let resolveInit: () => void;
@@ -246,6 +248,7 @@ export class AddonTable {
       }
       Guide.showGuideInAddonTableIfNeed(this.window);
     }, 2000);
+    return win;
   }
 
   /**
@@ -328,6 +331,7 @@ export class AddonTable {
       return;
     }
     const progressWin = new ztoolkit.ProgressWindow(getString("addon-name"), {
+      window: getActiveWindow(),
       closeOnClick: true,
       closeTime: -1,
     })

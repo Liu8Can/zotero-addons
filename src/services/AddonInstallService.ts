@@ -7,6 +7,7 @@ import { ProgressWindowHelper } from "zotero-plugin-toolkit";
 import { config } from "../../package.json";
 import { getString } from "../utils/locale";
 import { getAddonManager } from "../utils/compat";
+import { resolveProgressWindowOwner } from "../utils/window";
 import type {
   AddonInfo,
   LocalAddon,
@@ -21,6 +22,8 @@ export interface InstallOptions {
   name?: string;
   popWin?: boolean;
   startIndex?: number;
+  /** Owner for dependent progress windows. */
+  window?: Window;
 }
 
 /**
@@ -29,6 +32,8 @@ export interface InstallOptions {
 export interface UninstallOptions {
   popConfirmDialog?: boolean;
   canRestore?: boolean;
+  /** Owner for dependent progress windows. */
+  window?: Window;
 }
 
 /**
@@ -95,6 +100,7 @@ export async function uninstall(
   addon: LocalAddon,
   options?: UninstallOptions,
 ): Promise<boolean> {
+  const progressWindowOwner = resolveProgressWindowOwner(options?.window);
   if (options?.popConfirmDialog) {
     const confirm = await (Services as any).prompt.confirmEx(
       null as any,
@@ -116,6 +122,7 @@ export async function uninstall(
   }
 
   const popWin = new ztoolkit.ProgressWindow(getString("addon-name"), {
+    window: progressWindowOwner,
     closeOnClick: true,
     closeTime: 3000,
   });
@@ -155,6 +162,7 @@ export async function installAddonFrom(
   url: string | string[],
   options?: InstallOptions,
 ): Promise<void> {
+  const progressWindowOwner = resolveProgressWindowOwner(options?.window);
   if (!Array.isArray(url)) {
     url = [url];
   }
@@ -178,6 +186,7 @@ export async function installAddonFrom(
   let popWin: ProgressWindowHelper | undefined = undefined;
   if (options?.popWin) {
     popWin = new ztoolkit.ProgressWindow(getString("addon-name"), {
+      window: progressWindowOwner,
       closeOnClick: true,
       closeTime: -1,
     })
@@ -302,8 +311,11 @@ export async function installAddonFrom(
   const doNextUrlInstall = await actualInstall();
   popWin?.startCloseTimer(2000);
   if (doNextUrlInstall && Array.isArray(url) && url.length > 1) {
-    options = options ?? {};
-    options.startIndex = startIndex + 1;
+    options = {
+      ...options,
+      startIndex: startIndex + 1,
+      window: progressWindowOwner,
+    };
     return await installAddonFrom(url, options);
   }
 }
