@@ -48,11 +48,14 @@ describe("automatic source selection", function () {
           if (url.includes("gitee.com")) {
             throw new Error("unreachable");
           }
+          // Keep the gaps wider than the Zotero/Firefox timer granularity so
+          // a busy CI runner cannot collapse every candidate to the same
+          // measured latency and make this ordering assertion flaky.
           const delay = url.includes("cdn.jsdelivr.net")
             ? 5
             : url.includes("gh-proxy.org")
-              ? 15
-              : 25;
+              ? 100
+              : 200;
           await new Promise((resolve) => setTimeout(resolve, delay));
           return {};
         }
