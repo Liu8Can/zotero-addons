@@ -8,6 +8,8 @@ export type SourceID =
   | "source-zotero-scraper-github"
   | "source-zotero-scraper-gitee"
   | "source-zotero-scraper-ghproxy"
+  | "source-zotero-scraper-ghfast"
+  | "source-zotero-scraper-ghproxynet"
   | "source-zotero-scraper-jsdelivr"
   | "source-custom";
 
@@ -43,6 +45,14 @@ export const Sources: Readonly<Readonly<Source>[]> = <const>[
   {
     id: "source-zotero-scraper-ghproxy",
     api: "https://gh-proxy.org/https://raw.githubusercontent.com/syt2/zotero-addons-scraper/publish/addon_infos.json",
+  },
+  {
+    id: "source-zotero-scraper-ghfast",
+    api: "https://ghfast.top/https://raw.githubusercontent.com/syt2/zotero-addons-scraper/publish/addon_infos.json",
+  },
+  {
+    id: "source-zotero-scraper-ghproxynet",
+    api: "https://ghproxy.net/https://raw.githubusercontent.com/syt2/zotero-addons-scraper/publish/addon_infos.json",
   },
   {
     id: "source-custom",

@@ -15,17 +15,52 @@ type PersistedColumnState = Pick<
 >;
 
 const TAG_COLUMN_MIGRATION_PREF = "tagColumnLayoutMigrated";
+const NAME_COLUMN_MIGRATION_PREF = "nameColumnWidthMigrated";
+
+type MigrationPrefKey =
+  | typeof TAG_COLUMN_MIGRATION_PREF
+  | typeof NAME_COLUMN_MIGRATION_PREF;
+
+type ColumnPreferenceStore = Pick<LargePrefHelper, "getValue" | "setValue">;
+
+export interface TableColumnManagerDependencies {
+  columnPreferenceStore?: ColumnPreferenceStore;
+  getMigrationPref?: (key: MigrationPrefKey) => boolean | undefined;
+  setMigrationPref?: (key: MigrationPrefKey, value: boolean) => void;
+  getColumnLabel?: (key: string) => string;
+}
+
+const NAME_COLUMN_KEY = "menu-name";
 const TAG_COLUMN_KEY = "menu-tags";
 const STAR_COLUMN_KEY = "menu-star";
 const TAG_COLUMN_WIDTH = 96;
+const NAME_COLUMN_WIDTH = 200;
+const NAME_COLUMN_MIN_WIDTH = 160;
 
 export class TableColumnManager {
-  private largePrefHelper = new LargePrefHelper(
-    "zotero.addons.ui",
-    config.prefsPrefix,
-    "parser",
-  );
+  private columnPreferenceStore: ColumnPreferenceStore;
+  private getMigrationPref: NonNullable<
+    TableColumnManagerDependencies["getMigrationPref"]
+  >;
+  private setMigrationPref: NonNullable<
+    TableColumnManagerDependencies["setMigrationPref"]
+  >;
+  private getColumnLabel: NonNullable<
+    TableColumnManagerDependencies["getColumnLabel"]
+  >;
   private _columns: ExtendedColumnOptions[] = [];
+
+  constructor(dependencies: TableColumnManagerDependencies = {}) {
+    this.columnPreferenceStore =
+      dependencies.columnPreferenceStore ??
+      new LargePrefHelper("zotero.addons.ui", config.prefsPrefix, "parser");
+    this.getMigrationPref =
+      dependencies.getMigrationPref ?? ((key) => getPref(key));
+    this.setMigrationPref =
+      dependencies.setMigrationPref ?? ((key, value) => setPref(key, value));
+    this.getColumnLabel =
+      dependencies.getColumnLabel ?? ((key) => getString(key as any));
+  }
 
   /**
    * Get column configurations
@@ -37,7 +72,7 @@ export class TableColumnManager {
     const defaultColumns = this.getDefaultColumns();
     this._columns = defaultColumns;
     try {
-      const result = this.largePrefHelper.getValue(
+      const result = this.columnPreferenceStore.getValue(
         "columns",
       ) as PersistedColumnState[];
       if (result.length === this._columns.length) {
@@ -56,9 +91,9 @@ export class TableColumnManager {
       // Use default columns
     }
     this.migrateTagColumnLayoutIfNeeded();
+    this.migrateNameColumnWidthIfNeeded();
     this._columns.map((column) =>
-      // @ts-expect-error ignore getString type check
-      Object.assign(column, { label: getString(column.dataKey) }),
+      Object.assign(column, { label: this.getColumnLabel(column.dataKey) }),
     );
     return this._columns;
   }
@@ -82,7 +117,7 @@ export class TableColumnManager {
         const persistedColumns = this._columns.map((column) =>
           this.toPersistedColumnState(column),
         );
-        this.largePrefHelper.setValue("columns", persistedColumns);
+        this.columnPreferenceStore.setValue("columns", persistedColumns);
       }
     } catch (error) {
       ztoolkit.log(`updateColumns failed: ${error}`);
@@ -120,9 +155,11 @@ export class TableColumnManager {
   private getDefaultColumns(): ExtendedColumnOptions[] {
     return [
       {
-        dataKey: "menu-name",
+        dataKey: NAME_COLUMN_KEY,
         label: "menu-name",
         staticWidth: true,
+        width: NAME_COLUMN_WIDTH,
+        minWidth: NAME_COLUMN_MIN_WIDTH,
         hidden: false,
         ordinal: 0,
       },
@@ -196,7 +233,7 @@ export class TableColumnManager {
   }
 
   private migrateTagColumnLayoutIfNeeded(): void {
-    if (getPref(TAG_COLUMN_MIGRATION_PREF)) {
+    if (this.getMigrationPref(TAG_COLUMN_MIGRATION_PREF)) {
       return;
     }
 
@@ -227,11 +264,44 @@ export class TableColumnManager {
     });
 
     this._columns = orderedColumns;
-    this.largePrefHelper.setValue(
+    this.columnPreferenceStore.setValue(
       "columns",
       this._columns.map((column) => this.toPersistedColumnState(column)),
     );
-    setPref(TAG_COLUMN_MIGRATION_PREF, true);
+    this.setMigrationPref(TAG_COLUMN_MIGRATION_PREF, true);
+  }
+
+  /**
+   * Repair the missing name-column width used by older releases.
+   *
+   * Zotero 7 distributed width across columns that omitted it. Zotero 10's
+   * virtualized table treats a static column without a width as effectively
+   * minimum-sized, so existing persisted layouts can make the name column
+   * nearly unreadable.
+   */
+  private migrateNameColumnWidthIfNeeded(): void {
+    if (this.getMigrationPref(NAME_COLUMN_MIGRATION_PREF)) {
+      return;
+    }
+
+    const nameColumn = this._columns.find(
+      (column) => column.dataKey === NAME_COLUMN_KEY,
+    );
+    if (!nameColumn) {
+      return;
+    }
+
+    const width = Number(nameColumn.width);
+    if (!Number.isFinite(width) || width < NAME_COLUMN_MIN_WIDTH) {
+      nameColumn.width = NAME_COLUMN_WIDTH;
+    }
+    nameColumn.minWidth = NAME_COLUMN_MIN_WIDTH;
+
+    this.columnPreferenceStore.setValue(
+      "columns",
+      this._columns.map((column) => this.toPersistedColumnState(column)),
+    );
+    this.setMigrationPref(NAME_COLUMN_MIGRATION_PREF, true);
   }
 
   /**
@@ -264,8 +334,7 @@ export class TableColumnManager {
         children: allColumnSelectMenus.map((menuItem) => ({
           tag: "menuitem",
           attributes: {
-            // @ts-expect-error ignore getString type check
-            label: getString(menuItem),
+            label: this.getColumnLabel(menuItem),
             value: menuItem,
             checked: !(
               this.columns.find((column) => column.dataKey === menuItem) as any

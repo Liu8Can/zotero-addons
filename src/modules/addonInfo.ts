@@ -6,6 +6,11 @@ import {
   setAutoSource,
 } from "../utils/configuration";
 import { getXPIDatabase, getAddonManager } from "../utils/compat";
+import {
+  buildXpiDownloadUrlsFromGitHub,
+  completeXpiDownloadUrls,
+  xpiDownloadUrlList,
+} from "../utils/xpiDownloadUrls";
 // Re-export types from types module
 export { InstallStatus } from "../types";
 export type { AddonInfo, HistoricalRelease, ReleaseCacheData } from "../types";
@@ -18,15 +23,16 @@ import type { AddonInfo, LocalAddon, HistoricalRelease, ReleaseCacheData, XpiDow
  * @returns Download urls (Adapted to current Zotero version)
  */
 export function xpiDownloadUrls(addonInfo: AddonInfo) {
-  const downloadsURLs = addonReleaseInfo(addonInfo)?.xpiDownloadUrl;
-  if (!downloadsURLs) {
+  const suppliedDownloadURLs = addonReleaseInfo(addonInfo)?.xpiDownloadUrl;
+  if (!suppliedDownloadURLs) {
     return [];
   }
+  const downloadsURLs = completeXpiDownloadUrls(suppliedDownloadURLs);
   const sourceID =
     currentSource().id === "source-auto"
       ? autoSource()?.id
       : currentSource().id;
-  const result = Object.values(downloadsURLs).filter((e) => !!e);
+  const result = xpiDownloadUrlList(downloadsURLs);
   let firstElement: string | undefined = undefined;
   switch (sourceID) {
     case "source-zotero-scraper-github":
@@ -34,6 +40,12 @@ export function xpiDownloadUrls(addonInfo: AddonInfo) {
       break;
     case "source-zotero-scraper-ghproxy":
       firstElement = downloadsURLs.ghProxy;
+      break;
+    case "source-zotero-scraper-ghfast":
+      firstElement = downloadsURLs.ghFast;
+      break;
+    case "source-zotero-scraper-ghproxynet":
+      firstElement = downloadsURLs.ghProxyNet;
       break;
     case "source-zotero-scraper-jsdelivr":
       firstElement = downloadsURLs.jsdeliver;
@@ -404,6 +416,8 @@ export function isScraperSource(): boolean {
     sourceID === "source-zotero-scraper-github" ||
     sourceID === "source-zotero-scraper-gitee" ||
     sourceID === "source-zotero-scraper-ghproxy" ||
+    sourceID === "source-zotero-scraper-ghfast" ||
+    sourceID === "source-zotero-scraper-ghproxynet" ||
     sourceID === "source-zotero-scraper-jsdelivr"
   );
 }
@@ -432,6 +446,10 @@ function buildReleaseCacheUrl(repo: string): string | undefined {
       return `https://cdn.jsdelivr.net/gh/syt2/zotero-addons-scraper@publish/release_cache/${encodedRepo}.json`;
     case "source-zotero-scraper-ghproxy":
       return `https://gh-proxy.org/https://raw.githubusercontent.com/syt2/zotero-addons-scraper/refs/heads/publish/release_cache/${encodedRepo}.json`;
+    case "source-zotero-scraper-ghfast":
+      return `https://ghfast.top/https://raw.githubusercontent.com/syt2/zotero-addons-scraper/refs/heads/publish/release_cache/${encodedRepo}.json`;
+    case "source-zotero-scraper-ghproxynet":
+      return `https://ghproxy.net/https://raw.githubusercontent.com/syt2/zotero-addons-scraper/refs/heads/publish/release_cache/${encodedRepo}.json`;
     default:
       return undefined;
   }
@@ -476,35 +494,8 @@ export async function fetchHistoricalReleases(repo: string): Promise<HistoricalR
  * @param githubUrl The original GitHub download URL
  * @returns XpiDownloadUrls object with various mirror URLs
  */
-function isUsableHistoricalDownloadUrl(url?: string): boolean {
-  if (!url?.trim()) {
-    return false;
-  }
-  try {
-    const parsed = new URL(url.trim());
-    return (
-      (parsed.protocol === "https:" || parsed.protocol === "http:") &&
-      (parsed.pathname !== "/" || !!parsed.search)
-    );
-  } catch {
-    return false;
-  }
-}
-
 export function buildHistoricalDownloadUrls(githubUrl: string): XpiDownloadUrls {
-  const normalizedUrl = githubUrl.trim();
-  if (!isUsableHistoricalDownloadUrl(normalizedUrl)) {
-    return {
-      github: "",
-      ghProxy: "",
-      kgithub: "",
-    };
-  }
-  return {
-    github: normalizedUrl,
-    ghProxy: `https://gh-proxy.org/${normalizedUrl}`,
-    kgithub: normalizedUrl.replace("github.com", "kkgithub.com"),
-  };
+  return buildXpiDownloadUrlsFromGitHub(githubUrl);
 }
 
 /**
@@ -519,9 +510,7 @@ export function historicalReleaseDownloadUrls(historicalRelease: HistoricalRelea
       ? autoSource()?.id
       : currentSource().id;
 
-  const result = Object.values(urls).filter((e) =>
-    isUsableHistoricalDownloadUrl(e),
-  ) as string[];
+  const result = xpiDownloadUrlList(urls);
   let firstElement: string | undefined = undefined;
 
   switch (sourceID) {
@@ -530,6 +519,12 @@ export function historicalReleaseDownloadUrls(historicalRelease: HistoricalRelea
       break;
     case "source-zotero-scraper-ghproxy":
       firstElement = urls.ghProxy;
+      break;
+    case "source-zotero-scraper-ghfast":
+      firstElement = urls.ghFast;
+      break;
+    case "source-zotero-scraper-ghproxynet":
+      firstElement = urls.ghProxyNet;
       break;
     case "source-zotero-scraper-jsdelivr":
     case "source-zotero-scraper-gitee":

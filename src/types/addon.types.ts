@@ -11,6 +11,8 @@ export interface XpiDownloadUrls {
   ghProxy?: string;
   jsdeliver?: string;
   kgithub?: string;
+  ghFast?: string;
+  ghProxyNet?: string;
 }
 
 /**

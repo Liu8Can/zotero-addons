@@ -7,6 +7,7 @@ import { ProgressWindowHelper } from "zotero-plugin-toolkit";
 import { config } from "../../package.json";
 import { getString } from "../utils/locale";
 import { getAddonManager } from "../utils/compat";
+import { resolveProgressWindowOwner } from "../utils/window";
 import type {
   AddonInfo,
   LocalAddon,
@@ -27,6 +28,8 @@ export interface InstallOptions {
   slowSpeedWindowMs?: number;
   /** Minimum average speed before trying the next source. */
   minimumBytesPerSecond?: number;
+  /** Owner for dependent progress windows. */
+  window?: Window;
 }
 
 const DEFAULT_STALL_TIMEOUT_MS = 8000;
@@ -79,21 +82,33 @@ export function downloadFailoverReason(options: {
 export interface UninstallOptions {
   popConfirmDialog?: boolean;
   canRestore?: boolean;
+  /** Owner for dependent progress windows. */
+  window?: Window;
 }
 
 /**
  * Get XPI source name from URL
  */
 export function xpiURLSourceName(url: string): string {
-  if (url.startsWith("https://github.com")) {
+  let hostname: string;
+  try {
+    hostname = new URL(url).hostname.toLowerCase();
+  } catch {
+    return "source-others";
+  }
+  if (hostname === "github.com") {
     return "source-github";
-  } else if (url.startsWith("https://gitee.com")) {
+  } else if (hostname === "gitee.com") {
     return "source-gitee";
-  } else if (url.startsWith("https://ghproxy.com")) {
+  } else if (hostname === "ghproxy.com" || hostname === "gh-proxy.org") {
     return "source-ghproxy";
-  } else if (url.startsWith("https://cdn.jsdelivr.net")) {
+  } else if (hostname === "ghfast.top") {
+    return "source-ghfast";
+  } else if (hostname === "ghproxy.net") {
+    return "source-ghproxynet";
+  } else if (hostname === "cdn.jsdelivr.net") {
     return "source-jsdelivr";
-  } else if (url.startsWith("https://kkgithub.com")) {
+  } else if (hostname === "kkgithub.com") {
     return "source-kgithub";
   } else {
     return "source-others";
@@ -135,6 +150,7 @@ export async function uninstall(
   addon: LocalAddon,
   options?: UninstallOptions,
 ): Promise<boolean> {
+  const progressWindowOwner = resolveProgressWindowOwner(options?.window);
   if (options?.popConfirmDialog) {
     const confirm = await (Services as any).prompt.confirmEx(
       null as any,
@@ -156,6 +172,7 @@ export async function uninstall(
   }
 
   const popWin = new ztoolkit.ProgressWindow(getString("addon-name"), {
+    window: progressWindowOwner,
     closeOnClick: true,
     closeTime: 3000,
   });
@@ -196,6 +213,7 @@ export async function installAddonFrom(
   options?: InstallOptions,
 ): Promise<void> {
   const urls = Array.isArray(url) ? url : [url];
+  const progressWindowOwner = resolveProgressWindowOwner(options?.window);
   const startIndex = options?.startIndex ?? 0;
   if (startIndex >= urls.length || startIndex < 0) {
     return;
@@ -217,6 +235,7 @@ export async function installAddonFrom(
   let popWin: ProgressWindowHelper | undefined = undefined;
   if (options?.popWin) {
     popWin = new ztoolkit.ProgressWindow(getString("addon-name"), {
+      window: progressWindowOwner,
       closeOnClick: true,
       closeTime: -1,
     })
@@ -425,8 +444,11 @@ export async function installAddonFrom(
   const doNextUrlInstall = await actualInstall();
   popWin?.startCloseTimer(2000);
   if (doNextUrlInstall && urls.length > 1) {
-    options = options ?? {};
-    options.startIndex = startIndex + 1;
-    return await installAddonFrom(urls, options);
+    const nextOptions = {
+      ...options,
+      startIndex: startIndex + 1,
+      window: progressWindowOwner,
+    };
+    return await installAddonFrom(urls, nextOptions);
   }
 }

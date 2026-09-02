@@ -30,9 +30,10 @@ After install this add-on in Zotero, click <img align="center" src="addon/conten
 
 ### [syt2/zotero-addons-scraper](https://github.com/syt2/zotero-addons-scraper)
 
-The main data source for add-ons comes from **[syt2/zotero-addons-scraper](https://github.com/syt2/zotero-addons-scraper)**.
+The data source for add-ons comes from **[syt2/zotero-addons-scraper](https://github.com/syt2/zotero-addons-scraper)**.
 
-Switch the source to `(addon-scraper)` in Add-on Market to use this source.
+Select GitHub, Gitee, jsDelivr, gh-proxy, ghFast, or ghProxyNet in Add-on
+Market to use this data source.
 
 > If you have new add-ons to add, submit it to [syt2/zotero-addons-scraper](https://github.com/syt2/zotero-addons-scraper).
 
