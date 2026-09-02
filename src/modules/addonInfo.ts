@@ -11,13 +11,12 @@ import {
   completeXpiDownloadUrls,
   xpiDownloadUrlList,
 } from "../utils/xpiDownloadUrls";
+import { sortByLatency } from "../utils/sourceLatency";
 // Re-export types from types module
 export { InstallStatus } from "../types";
 export type { AddonInfo, HistoricalRelease, ReleaseCacheData } from "../types";
 import { InstallStatus } from "../types";
 import type { AddonInfo, LocalAddon, HistoricalRelease, ReleaseCacheData, XpiDownloadUrls } from "../types";
-
-type HttpRequest = typeof Zotero.HTTP.request;
 
 /**
  * Extract download urls of xpi file from AddonInfo
@@ -231,7 +230,6 @@ class AddonInfoAPI {
     timeout?: number,
     onTimeoutCallback?: VoidFunction,
     errorDelayMax?: number,
-    request: HttpRequest = Zotero.HTTP.request,
   ): Promise<AddonInfo[]> {
     ztoolkit.log(`fetch addon infos from ${url}`);
     try {
@@ -242,7 +240,7 @@ class AddonInfoAPI {
       if (errorDelayMax !== undefined) {
         options.errorDelayMax = errorDelayMax;
       }
-      const response = await request.call(Zotero.HTTP, "GET", url, options);
+      const response = await Zotero.HTTP.request("GET", url, options);
       const addons = JSON.parse(response.response) as AddonInfo[];
       const validAddons = addons.filter((addon) => addonReleaseInfo(addon));
       // return validAddons.sort((a: AddonInfo, b: AddonInfo) => {
@@ -294,17 +292,10 @@ export class AddonInfoManager {
    * @param forceRefresh force fetch
    * @returns AddonInfo[]
    */
-  async fetchAddonInfos(
-    forceRefresh = false,
-    request: HttpRequest = Zotero.HTTP.request,
-  ) {
+  async fetchAddonInfos(forceRefresh = false) {
     const source = currentSource();
     if (source.id === "source-auto" && (!source.api || forceRefresh)) {
-      return await AddonInfoManager.autoSwitchAvaliableApi(
-        3000,
-        10000,
-        request,
-      );
+      return await AddonInfoManager.autoSwitchAvaliableApi();
     }
     const url = source.api;
     if (!url) {
@@ -314,13 +305,7 @@ export class AddonInfoManager {
     if (!forceRefresh && this.addonInfos) {
       return this.addonInfos;
     }
-    const infos = await AddonInfoAPI.fetchAddonInfos(
-      url,
-      5000,
-      undefined,
-      undefined,
-      request,
-    );
+    const infos = await AddonInfoAPI.fetchAddonInfos(url, 5000);
     if (infos.length > 0) {
       this.sourceInfos[url] = [new Date(), infos];
     }
@@ -342,27 +327,12 @@ export class AddonInfoManager {
   static async autoSwitchAvaliableApi(
     probeTimeout = 3000,
     fetchTimeout = 10000,
-    request: HttpRequest = Zotero.HTTP.request,
   ) {
-    // Explicit transports are used by tests and callers that need an isolated
-    // probe. Only the default Zotero transport should share startup work.
-    if (request !== Zotero.HTTP.request) {
-      return await this.findAvailableApi(
-        probeTimeout,
-        fetchTimeout,
-        request,
-      );
-    }
-
     if (this.autoSwitchPromise) {
       return await this.autoSwitchPromise;
     }
 
-    this.autoSwitchPromise = this.findAvailableApi(
-      probeTimeout,
-      fetchTimeout,
-      request,
-    );
+    this.autoSwitchPromise = this.findAvailableApi(probeTimeout, fetchTimeout);
     try {
       return await this.autoSwitchPromise;
     } finally {
@@ -373,40 +343,39 @@ export class AddonInfoManager {
   private static async findAvailableApi(
     probeTimeout: number,
     fetchTimeout: number,
-    request: HttpRequest,
   ): Promise<AddonInfo[]> {
     const sourcesWithApi = Sources.filter(
       (source): source is Source & { api: string } => !!source.api,
     );
 
-    const candidates = (
-      await Promise.all(
-        sourcesWithApi.map(async (source) => {
-          const start = Date.now();
-          try {
-            await request.call(Zotero.HTTP, "HEAD", source.api, {
-              timeout: probeTimeout,
-              errorDelayMax: 0,
-            });
-            const latency = Date.now() - start;
-            ztoolkit.log(`source ${source.id} responded in ${latency}ms`);
-            return { source, latency };
-          } catch (error) {
-            ztoolkit.log(`source ${source.id} probe failed: ${error}`);
-            return undefined;
-          }
-        }),
-      )
-    )
-      .filter(
+    const candidates = sortByLatency(
+      (
+        await Promise.all(
+          sourcesWithApi.map(async (source) => {
+            const start = Date.now();
+            try {
+              await Zotero.HTTP.request("HEAD", source.api, {
+                timeout: probeTimeout,
+                errorDelayMax: 0,
+              });
+              const latency = Date.now() - start;
+              ztoolkit.log(`source ${source.id} responded in ${latency}ms`);
+              return { source, latency };
+            } catch (error) {
+              ztoolkit.log(`source ${source.id} probe failed: ${error}`);
+              return undefined;
+            }
+          }),
+        )
+      ).filter(
         (
           candidate,
         ): candidate is {
           source: Source & { api: string };
           latency: number;
         } => !!candidate,
-      )
-      .sort((a, b) => a.latency - b.latency);
+      ),
+    );
 
     for (const { source } of candidates) {
       ztoolkit.log(`trying source: ${source.id}`);
@@ -419,7 +388,6 @@ export class AddonInfoManager {
         // Source failover handles retries; move to the next source immediately
         // instead of using Zotero's default retry window for HTTP 5xx errors.
         0,
-        request,
       );
 
       if (infos.length > 0) {
