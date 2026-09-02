@@ -12,7 +12,6 @@ import {
 
 describe("automatic source selection", function () {
   it("re-probes on refresh and fetches the fastest reachable source", async function () {
-    const originalRequest = Zotero.HTTP.request;
     const originalSource = currentSource().id;
     const originalAutoSource = autoSource();
     const jsdelivrSource = Sources.find(
@@ -39,7 +38,7 @@ describe("automatic source selection", function () {
     try {
       setCurrentSource("source-auto");
       setAutoSource(Sources[1]);
-      Zotero.HTTP.request = async (
+      const request = async (
         method: string,
         url: string,
         options?: { timeout?: number },
@@ -64,7 +63,10 @@ describe("automatic source selection", function () {
         return { response: JSON.stringify(addonInfos) };
       };
 
-      const infos = await AddonInfoManager.shared.fetchAddonInfos(true);
+      const infos = await AddonInfoManager.shared.fetchAddonInfos(
+        true,
+        request as typeof Zotero.HTTP.request,
+      );
 
       assert.lengthOf(infos, 1);
       assert.equal(autoSource()?.id, "source-zotero-scraper-jsdelivr");
@@ -75,7 +77,6 @@ describe("automatic source selection", function () {
         },
       ]);
     } finally {
-      Zotero.HTTP.request = originalRequest;
       setCurrentSource(originalSource);
       setAutoSource(originalAutoSource);
     }
