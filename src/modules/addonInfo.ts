@@ -344,6 +344,16 @@ export class AddonInfoManager {
     fetchTimeout = 10000,
     request: HttpRequest = Zotero.HTTP.request,
   ) {
+    // Explicit transports are used by tests and callers that need an isolated
+    // probe. Only the default Zotero transport should share startup work.
+    if (request !== Zotero.HTTP.request) {
+      return await this.findAvailableApi(
+        probeTimeout,
+        fetchTimeout,
+        request,
+      );
+    }
+
     if (this.autoSwitchPromise) {
       return await this.autoSwitchPromise;
     }
