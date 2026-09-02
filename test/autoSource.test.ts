@@ -69,6 +69,12 @@ describe("automatic source selection", function () {
           timeout: 10000,
         },
       ]);
+    } catch (error) {
+      console.error(
+        "automatic source selection test failed:",
+        error instanceof Error ? error.stack || error.message : String(error),
+      );
+      throw error;
     } finally {
       setAutoSource(originalAutoSource);
     }
