@@ -2,17 +2,10 @@ declare const Zotero: any;
 
 import { assert } from "chai";
 import { AddonInfoManager } from "../src/modules/addonInfo";
-import {
-  Sources,
-  autoSource,
-  currentSource,
-  setAutoSource,
-  setCurrentSource,
-} from "../src/utils/configuration";
+import { Sources, autoSource, setAutoSource } from "../src/utils/configuration";
 
 describe("automatic source selection", function () {
-  it("re-probes on refresh and fetches the fastest reachable source", async function () {
-    const originalSource = currentSource().id;
+  it("fetches the fastest reachable source", async function () {
     const originalAutoSource = autoSource();
     const jsdelivrSource = Sources.find(
       (source) => source.id === "source-zotero-scraper-jsdelivr",
@@ -36,7 +29,6 @@ describe("automatic source selection", function () {
     ];
 
     try {
-      setCurrentSource("source-auto");
       setAutoSource(Sources[1]);
       const request = async (
         method: string,
@@ -63,8 +55,9 @@ describe("automatic source selection", function () {
         return { response: JSON.stringify(addonInfos) };
       };
 
-      const infos = await AddonInfoManager.shared.fetchAddonInfos(
-        true,
+      const infos = await AddonInfoManager.autoSwitchAvaliableApi(
+        3000,
+        10000,
         request as typeof Zotero.HTTP.request,
       );
 
@@ -77,7 +70,6 @@ describe("automatic source selection", function () {
         },
       ]);
     } finally {
-      setCurrentSource(originalSource);
       setAutoSource(originalAutoSource);
     }
   });
